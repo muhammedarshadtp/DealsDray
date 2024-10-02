@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Admin: Sign In</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/admin/css/style.min.css">
+    <style>
+        body {
+            background: url('https://example.com/your-background-image.jpg') no-repeat center center fixed; /* Replace with your image URL */
+            background-size: cover;
+        }
+
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            opacity: 0.9; /* Slight opacity for better contrast with background */
+        }
+
+        .login-card {
+            padding: 40px; /* Increased padding */
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+            background-color: rgba(255, 255, 255, 0.8); /* White background with slight transparency */
+        }
+
+        .login-card h5 {
+            margin-bottom: 20px;
+            font-weight: bold;
+            font-size: 1.8rem; /* Increased font size */
+            color: #333; /* Dark color for better visibility */
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-container">
+        <div class="card login-card">
+            <div class="header text-center">
+                <img class="logo" src="/admin/images/logo.svg" alt="" style="width: 100px; margin-bottom: 20px;">
+                <h5>Admin Login</h5>
+            </div>
+            <form method="post" action="/login">
+                <div class="form-group">
+                    <input type="email" class="form-control" placeholder="email" name="email">
+                </div>
+                <div class="form-group">
+                    <input type="password" class="form-control" placeholder="password" name="password">
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>
