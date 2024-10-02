@@ -1,0 +1,11 @@
+{
+  "name": "dealsdray",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm run"
+  },
+  "author": "Muhammed Arshad T P",
+  "license": "ISC"
+}
