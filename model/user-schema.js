@@ -1,12 +1,5 @@
 
 const mongoose = require('mongoose')
-mongoose.connect("mongodb://localhost:27017/DealsDray")
-.then(()=>{
-    console.log("mongosh connected")
-})
-.catch(()=>{
-    console.log("failed connect")
-})
 
 const userschema = mongoose.Schema({
     name:{
