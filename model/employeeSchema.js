@@ -1,6 +1,9 @@
 
 const mongoose = require('mongoose')
-mongoose.connect("mongodb://localhost:27017/DealsDray")
+mongoose.connect("mongodb://localhost:27017/DealsDray",{
+    useNewUrlParser: true,
+  useUnifiedTopology: true
+})
 .then(()=>{
     console.log("mongosh connected")
 })
@@ -8,7 +11,7 @@ mongoose.connect("mongodb://localhost:27017/DealsDray")
     console.log("failed connect")
 })
 
-const userschema = mongoose.Schema({
+const employeeSchema  = new mongoose.Schema({
     name:{
         type:String,
         required:true
@@ -34,11 +37,18 @@ const userschema = mongoose.Schema({
         required:true
     },
     imgUplode:{
-        type:File,
-        required:true
+        type:String,
+        
+    },
+    createdAt:{
+        type:Date,
+        default: Date.now,
+    },
+    updatedAt:{
+        type:Date,
     }
 })
 
-const userCollection = mongoose.model('users',userschema)
+const Employee = mongoose.model('Employee',employeeSchema )
 
-module.export=userCollection
+module.export=Employee
