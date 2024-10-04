@@ -11,44 +11,53 @@ mongoose.connect("mongodb://localhost:27017/DealsDray",{
     console.log("failed connect")
 })
 
-const employeeSchema  = new mongoose.Schema({
-    name:{
-        type:String,
+
+const employeeSchema = new mongoose.Schema({
+    uniqueID:{
+        type: String,
         required:true
     },
-    email:{
-        type:String,
-        required:true
+    name: {
+        type: String,
+        required: true
     },
-    mobile:{
-        type:Number,
-        required:true
+    email: {
+        type: String,
+        required: true
     },
-    designation:{
-        type:String,
-        required:true
+    mobile: {
+        type: Number,
+        required: true
     },
-    gender:{
-        type:String,
-        required:true
+    designation: {
+        type: String,
+        required: true
     },
-    course:{
-        type:String,
-        required:true
+    gender: {
+        type: String,
+        required: true
     },
-    imgUplode:{
-        type:String,
-        
+    course: {
+        type: [String],
+        required: true
     },
-    createdAt:{
-        type:Date,
+    imgUpload: {
+        type: String,
+    },
+    status:{
+        type: Boolean,
+        default:true
+    },
+    createdAt: {
+        type: Date,
         default: Date.now,
     },
-    updatedAt:{
-        type:Date,
+    updatedAt: {
+        type: Date,
     }
-})
+});
 
-const Employee = mongoose.model('Employee',employeeSchema )
+const Employee = mongoose.model('Employee', employeeSchema);
 
-module.export=Employee
+// Fix the export statement
+module.exports = Employee;

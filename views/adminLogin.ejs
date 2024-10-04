@@ -54,12 +54,18 @@
             <div class="header text-center">
                 <img class="logo" src="/admin/images/logo.svg" alt="" style="width: 100px; margin-bottom: 20px;">
                 <h5>Admin Login</h5>
+                
             </div>
             <form  id="formData" method="post" action="/login">
-                <% if(emailError){%>
-                    <div  class="error-message alter text-danger text-start"><%=emailError%></div>
-        
-                <%}%>
+            
+                <% if (emailError) { %>
+                    <div class="alert alert-danger" role="alert">
+                        <%= emailError %> 
+                    </div>
+                <% } %>
+              
+                 
+                
                 <div class="form-group">
                     <input type="email" class="form-control" placeholder="email" name="email">
                 </div>
@@ -109,9 +115,9 @@ https://cdn.jsdelivr.net/npm/toastr@2.1.4/build/toastr.min.css
         })
         .then(data => {
             if (data.result === 'success') {
-                window.location.href = '/adminHome';  // Fixed redirection
+                window.location.href = '/adminHome';  
             } else  {
-                toastr.error(`${data.error}`);  // Display error using Toastr
+                toastr.error(`${data.error}`);  
             }
         })
         .catch(error => {

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Employe</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    body {
+      background-color: #f8f9fa;
+      font-family: Arial, sans-serif;
+    }
+    .card {
+      border-radius: 10px;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    .card-header {
+      background-color: #007bff;
+      color: white;
+      text-align: center;
+      font-size: 1.5rem;
+      border-top-left-radius: 10px;
+      border-top-right-radius: 10px;
+    }
+    .card-body {
+      padding: 2rem;
+    }
+    .form-group label {
+      font-weight: bold;
+    }
+    .form-control, .form-check-input {
+      border-radius: 5px;
+    }
+    .btn-primary {
+      background-color: #007bff;
+      border: none;
+      padding: 0.7rem 1.5rem;
+      font-size: 1rem;
+      transition: background-color 0.3s;
+    }
+    .btn-primary:hover {
+      background-color: #0056b3;
+    }
+    .form-check-inline {
+      margin-right: 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Navbar with Employe List and Signout buttons -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+      <a class="navbar-brand" href="#"></a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="btn btn-primary btn-lg mr-2" href="/employelist" role="button">Employe List</a>
+          </li>
+          
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container mt-5">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header">
+            Edit Employee
+          </div>
+          <div class="card-body">
+            <form action="/updateEmployee/<%=employedata._id%>" method="POST" enctype="multipart/form-data">
+              <div class="form-group">
+                <label for="name">Username</label>
+                <input type="text" class="form-control" id="name" name="name" value="<%= employedata ? employedata.name : '' %>" required>
+              </div>
+              
+              <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" class="form-control" id="email" name="email" value="<%= employedata ? employedata.email : '' %>" required>
+              </div>
+              
+              <div class="form-group">
+                <label for="mobile">Mobile No</label>
+                <input type="tel" class="form-control" id="mobile" name="mobile" value="<%= employedata ? employedata.mobile : '' %>" required>
+              </div>
+              
+              <div class="form-group">
+                <label for="designation">Designation</label>
+                <select class="form-control" id="designation" name="designation" required>
+                  <option value="HR" <%= employedata && employedata.designation === 'HR' ? 'selected' : '' %>>HR</option>
+                  <option value="Manager" <%= employedata && employedata.designation === 'Manager' ? 'selected' : '' %>>Manager</option>
+                  <option value="Sales" <%= employedata && employedata.designation === 'Sales' ? 'selected' : '' %>>Sales</option>
+                </select>
+              </div>
+            
+              <div class="form-group">
+                <label>Gender</label><br>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="gender" id="male" value="M" <%= employedata && employedata.gender === 'M' ? 'checked' : '' %> required>
+                  <label class="form-check-label" for="male">Male</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="gender" id="female" value="F" <%= employedata && employedata.gender === 'F' ? 'checked' : '' %> required>
+                  <label class="form-check-label" for="female">Female</label>
+                </div>
+              </div>
+            
+              <div class="form-group">
+                <label>Course</label><br>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="checkbox" name="course[]" id="mca" value="MCA" <%= employedata && employedata.course.includes('MCA') ? 'checked' : '' %>>
+                  <label class="form-check-label" for="mca">MCA</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="checkbox" name="course[]" id="bca" value="BCA" <%= employedata && employedata.course.includes('BCA') ? 'checked' : '' %>>
+                  <label class="form-check-label" for="bca">BCA</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="checkbox" name="course[]" id="bsc" value="BSC" <%= employedata && employedata.course.includes('BSC') ? 'checked' : '' %>>
+                  <label class="form-check-label" for="bsc">BSC</label>
+                </div>
+              </div>
+            
+              <div class="form-group">
+                <label for="profilePicture">Profile Picture</label>
+                <input type="file" class="form-control-file" id="profilePicture" name="profilePicture">
+                <% if (employedata && employedata.imgUpload) { %>
+                  <p>Current Image: <img src="/<%= employedata.imgUpload %>" width="50" height="50" alt="Profile Picture"></p>
+                <% } %>
+              </div>
+            
+              <button type="submit" class="btn btn-primary btn-block">Update</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+   const name= document.getElementById('name')
+
+
+    
+  </script>
+  
+  <!-- Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
