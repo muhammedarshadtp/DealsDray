@@ -31,7 +31,6 @@ router.patch('/updateStatusEmployee/:empId',adminAuth,adminController.updateStau
 
 router.post('/employeeSearch',adminAuth ,adminController.employeeSearch)
 
-'/sortEmployees'
 
 router.get('/sortEmployees',adminAuth,adminController.sortEmployees)
 
