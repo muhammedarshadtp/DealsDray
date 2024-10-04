@@ -27,7 +27,7 @@ router.post('/updateEmployee/:empId',upload.single('profilePicture'), adminContr
 
 router.delete('/deleteEmployee/:empId',adminAuth,adminController.deleteemployee)
 
-router.patch('/updateStatusEmployee/:empId',adminAuth,adminController.updateStausEmployee)
+router.patch('/updateStatus/:empId',adminAuth,adminController.updateStausEmployee)
 
 router.post('/employeeSearch',adminAuth ,adminController.employeeSearch)
 

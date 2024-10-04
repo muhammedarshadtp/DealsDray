@@ -4,6 +4,8 @@ const adminCollection = require('../../model/admin-schema')
 const Employee = require('../../model/employeeSchema');
 const bcrypt = require('bcrypt')
 const crypto = require('crypto');
+const { alphanumValid, validateEmail, isValidMobile, isValidDesignation } = require('../../utils/adminvalidation');
+
 
 
 
@@ -15,7 +17,6 @@ const siginpost = async(req,res)=>{
         const hashPassword= await bcrypt.hash(password,10)
         const collection = new adminCollection({email,password: hashPassword})
         await collection.save()
-        console.log('saved');
         
         
     } catch (error) {
@@ -28,7 +29,7 @@ const admin = async(req,res)=>{
         if(req.session.isAuth){
             return res.redirect('/adminHome')
         }
-        const emailError = req.session.errorMsg;
+        const emailError = req.session.error;
         req.session.errorMsg = null; 
 
         console.log(emailError, 'Error message retrieved.'); 
@@ -37,41 +38,40 @@ const admin = async(req,res)=>{
         console.log(error,'enth error');
     }
 }
-
-const adminlogin = async(req,res)=>{
+const adminlogin = async (req, res) => {
     try {
-        const data={
-            email:req.body.email,
-            password:req.body.password
-        }
-        console.log(data);
-        const admin = await adminCollection.findOne({email:data.email})
+        const data = {
+            email: req.body.email,
+            password: req.body.password
+        };
 
-        if(!admin){
-            // req.flash('emailError', 'Invalid credentials.');
-            req.session.errorMsg = 'Invalid credentials.';
-            console.log('error email:', req.flash('emailError'));
-            return res.redirect('/'); 
-        }
-        const passwordMatch =   await bcrypt.compare(data.password,admin.password)
+       
+        const admin = await adminCollection.findOne({ email: data.email });
 
-        if(!passwordMatch){
-            req.flash('emailError', 'Invalid credentials.');
-            console.log('error email:pa', req.flash('emailError'));
-            return res.redirect('/'); 
+        if (!admin) {
+            return res.status(400).json({ error: 'Invalid credentials' });
         }
-        req.session.isAuth = true
-        req.session.errorMsg = null
-        return res.json({result:"success"})
-        
+
+        const passwordMatch = await bcrypt.compare(data.password, admin.password);
+
+        if (!passwordMatch) {
+            return res.status(400).json({ error: 'Invalid credentials' });
+        }
+
+        req.session.isAuth = true;
+        req.session.error = null;
+        return res.json({ result: "success" });
+
     } catch (error) {
         console.log(error);
+        return res.status(500).json({ error: 'Internal server error.' }); 
     }
-}
+};
+
 
 const home=async(req,res)=>{
     try {
-        res.render('adminHome')
+        res.render('adminHome')                     
     } catch (error) {
         console.log(error);
     }
@@ -79,7 +79,7 @@ const home=async(req,res)=>{
 
 const employelist = async (req, res) => {
     try {
-        const limit = 3; 
+        const limit = 4; 
         let page = Number(req.query.page) || 1; 
 
         
@@ -118,7 +118,7 @@ const sortEmployees = async (req, res) => {
         res.json(employees);
     } catch (error) {
         console.error('Error fetching sorted employees:', error);
-        res.status(500).send('Server Error');
+       
     }
 };
 
@@ -144,41 +144,65 @@ const addemploye = async (req,res)=>{
         console.log(error);
     }
 }
-const addemploypost = async(req,res)=>{
+
+
+const addemploypost = async (req, res) => {
     try {
-        const {name,email,mobile,designation,gender,course}=req.body
-
-        const uniqueID = parseInt(crypto.randomBytes(4).toString('hex'), 16) % 100000000;
-        const paddedUniqueID = String(uniqueID).padStart(8, '0');       
-        const existingEmployee = await Employee.findOne({ email });
-
-        if (existingEmployee) {
-          req.flash('duplicateError', 'Email already exists');
-          return res.redirect('/addemploye'); 
-        }
-
-       const employeData={
-        uniqueID : paddedUniqueID,
-        name:name,
-        email:email,
-        mobile:mobile,
-        designation:designation,
-        gender:gender,
-        course:course,
-        imgUpload: req.file ? req.file.path : null 
-
-       }
-
-       const addEmployee = new Employee(employeData)
-       await addEmployee.save()
-
-       res.redirect('/employelist')
-        
+      const { name, email, mobile, designation, gender, course } = req.body;
+  
+      
+      req.body.messages = { name, email, mobile, designation, gender, course };
+  
+     
+      if (!alphanumValid(name)) {
+        req.flash('error', 'Name must be alphanumeric and not empty');
+        return res.redirect('/addemploye');
+      }
+  
+      if (!validateEmail(email)) {
+        req.flash('error', 'Invalid email format');
+        return res.redirect('/addemploye');
+      }
+  
+      if (!isValidMobile(mobile)) {
+        req.flash('error', 'Mobile number must be 10 digits');
+        return res.redirect('/addemploye');
+      }
+  
+      if (!isValidDesignation(designation)) {
+        req.flash('error', 'Designation must only contain letters');
+        return res.redirect('/addemploye');
+      }
+  
+      const uniqueID = parseInt(crypto.randomBytes(4).toString('hex'), 16) % 100000000;
+      const paddedUniqueID = String(uniqueID).padStart(8, '0');
+      const existingEmployee = await Employee.findOne({ email });
+  
+      if (existingEmployee) {
+        req.flash('duplicateError', 'Email already exists');
+        return res.redirect('/addemploye');
+      }
+  
+      const employeData = {
+        uniqueID: paddedUniqueID,
+        name: name,
+        email: email,
+        mobile: mobile,
+        designation: designation,
+        gender: gender,
+        course: course,
+        imgUpload: req.file ? req.file.path : null,
+      };
+  
+      const addEmployee = new Employee(employeData);
+      await addEmployee.save();
+  
+      res.redirect('/employelist');
     } catch (error) {
-        console.log(error,'add employee error');
+      console.log(error, 'add employee error');
     }
-}
-
+  }
+  
 const editemployee = async (req, res) => {
     try {
       const { empId } = req.params;
@@ -195,14 +219,33 @@ const editemployee = async (req, res) => {
         const { name, email, mobile, designation, gender, course } = req.body;
         const filePath = req.file ? req.file.path : null;
 
+       
+        if (!alphanumValid(name)) {
+            req.flash('error', 'Name must be alphanumeric and not empty');
+            return res.redirect(`/editEmployee/${empId}`);
+        }
+
+        if (!validateEmail(email)) {
+            req.flash('error', 'Invalid email format');
+            return res.redirect(`/editEmployee/${empId}`);
+        }
+
+        if (!isValidMobile(mobile)) {
+            req.flash('error', 'Mobile number must be 10 digits');
+            return res.redirect(`/editEmployee/${empId}`);
+        }
+
+        if (!isValidDesignation(designation)) {
+            req.flash('error', 'Designation must only contain letters');
+            return res.redirect(`/editEmployee/${empId}`);
+        }
+
         const emailExists = await Employee.findOne({ email: email, _id: { $ne: empId } });
         
         if (emailExists) {
             req.flash('error', 'Email already exists!');
-            return res.redirect(`/editEmployee/${userId}`);
+            return res.redirect(`/editEmployee/${empId}`);
         }
-
-       
 
         const updatedEmployeeData = {
             name,
@@ -217,16 +260,18 @@ const editemployee = async (req, res) => {
             updatedEmployeeData.imgUpload = filePath;
         }
 
-        await Employee.findByIdAndUpdate(userId, updatedEmployeeData, { new: true });
+        await Employee.findByIdAndUpdate(empId, updatedEmployeeData, { new: true });
 
         req.flash('success', 'Employee details updated successfully!');
         res.redirect('/employelist');
     } catch (error) {
         console.log(error, 'edit employee error');
         req.flash('error', 'An error occurred while updating the employee details.');
-        res.redirect(`/editEmployee/${req.params.userId}`);
+        res.redirect(`/editEmployee/${empId}`);
     }
 };
+
+
 
 const deleteemployee = async (req, res) => {
     try {
@@ -252,7 +297,7 @@ const deleteemployee = async (req, res) => {
   const updateStausEmployee = async (req, res) => {
     try {
       const { empId } = req.params;
-  
+  console.log('vannu');
       const employee = await Employee.findById(empId);
   
       if (!employee) {
@@ -265,7 +310,7 @@ const deleteemployee = async (req, res) => {
   
     } catch (error) {
       console.error('update employee error:', error);
-      res.status(500).json({ error: 'An error occurred while updating  status of the employee' });
+      
     }
   };
 

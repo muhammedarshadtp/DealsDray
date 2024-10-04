@@ -1,75 +1,48 @@
-const alphanumValid =(name)=>{
-    try {
-        if (name.trim() === '') {
-            return false; // Return false for empty strings
-        }
-        nameRegex= /^(?! )[A-Za-z0-9 ]*(?<! )$/;
-        return nameRegex.test(name)
-        
-    } catch (error) {
-        console.log(error);
-        res.render("users/serverError") 
-    }
-}
+// Import validator library
 
-const onlyNumbers =(str)=>{
-    try {
-        console.log(str,'str is shwoing');
-        console.log(typeof str,'str is shwoing');
 
-        const numbersOnlyRegex =/^[0-9][0-9]*(\.[0-9]+)?$/;
-        return numbersOnlyRegex.test(str);
-        
-    } catch (error) {
-        console.log(error);
-        res.render("users/serverError") 
-    }
-}
+const alphanumValid = (name) => {
+    const nameRegex = /^(?! )[A-Za-z0-9 ]*(?<! )$/;
+    return name.trim() !== '' && nameRegex.test(name);
+};
 
-const zerotonine = (str) => {
-    try {
-        const numbersOnlyRegex = /^(0|[1-9][0-9]*)$/;
-        return str.length > 0 && numbersOnlyRegex.test(str);
-        
-    } catch (error) {
-        console.log(error);
-        res.render("users/serverError") 
-    }
-}
+const onlyNumbers = (str) => {
+    const numbersOnlyRegex = /^[0-9]+$/; // Allow only numbers
+    return numbersOnlyRegex.test(str);
+};
+
+
+const isValidMobile = (mobile) => {
+    return /^[0-9]{10}$/.test(mobile); // Validate mobile number (10 digits)
+};
+
+const isValidDesignation = (designation) => {
+    const designationRegex = /^[a-zA-Z\s]+$/; // Only allow letters and spaces
+    return designationRegex.test(designation);
+};
+const validateEmail = (email) => {
+    // Basic email validation using a regular expression
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
 
 const AlphaOnly = (input) => {
-    try {
-        if(input.length === 0){
-            return
-        }
-        const regex = /^[a-zA-Z]*$/;
-        console.log('dumbel dore work avunundo');
-        const result = regex.test(input);
-    
-        return result
-        
-    } catch (error) {
-        console.log(error);
-    
-    }
-}
-
+    const regex = /^[a-zA-Z]+$/; // Only allow letters
+    return input.length > 0 && regex.test(input);
+};
 
 const isFutureDate = (selectedDate) => {
-    try {
-        const selectedDateTime = new Date(selectedDate);
-        const currentDate = new Date();
-        return selectedDateTime > currentDate;
-        
-    } catch (error) {
-        console.log(error);
-        res.render("users/serverError") 
-    }
-}
-module.exports={
+    const selectedDateTime = new Date(selectedDate);
+    const currentDate = new Date();
+    return selectedDateTime > currentDate;
+};
+
+module.exports = {
     alphanumValid,
     onlyNumbers,
-    zerotonine,
+    validateEmail,
+    isValidMobile,
+    isValidDesignation,
     AlphaOnly,
     isFutureDate,
-}
+};

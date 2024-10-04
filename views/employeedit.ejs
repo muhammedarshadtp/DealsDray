@@ -150,6 +150,40 @@
 
     
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <script>
+      // Check for error message
+      <% if (messages.error) { %>
+          Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: '<%= messages.error %>',  // The error message from the server
+              confirmButtonText: 'OK'
+          });
+      <% } %>
+  
+      // Check for success message
+      <% if (messages.success) { %>
+          Swal.fire({
+              icon: 'success',
+              title: 'Success',
+              text: '<%= messages.success %>',  // The success message from the server
+              confirmButtonText: 'OK'
+          });
+      <% } %>
+  
+      // Check for duplicate error message
+      <% if (messages.duplicateError) { %>
+          Swal.fire({
+              icon: 'warning',
+              title: 'Duplicate Entry',
+              text: '<%= messages.duplicateError %>',  // The duplicate entry message from the server
+              confirmButtonText: 'OK'
+          });
+      <% } %>
+  </script>
+  
   
   <!-- Bootstrap JS -->
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
