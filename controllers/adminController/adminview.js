@@ -5,6 +5,7 @@ const Employee = require('../../model/employeeSchema');
 const bcrypt = require('bcrypt')
 const crypto = require('crypto');
 const { alphanumValid, validateEmail, isValidMobile, isValidDesignation } = require('../../utils/adminvalidation');
+const course = require('../../model/course-schema');
 
 
 
@@ -13,7 +14,6 @@ const { alphanumValid, validateEmail, isValidMobile, isValidDesignation } = requ
 const siginpost = async(req,res)=>{
     try {
       const {email,password} = req.body
-      console.log(email,password);
         const hashPassword= await bcrypt.hash(password,10)
         const collection = new adminCollection({email,password: hashPassword})
         await collection.save()
@@ -31,8 +31,6 @@ const admin = async(req,res)=>{
         }
         const emailError = req.session.error;
         req.session.errorMsg = null; 
-
-        console.log(emailError, 'Error message retrieved.'); 
         res.render('adminLogin', { emailError });
     } catch (error) {
         console.log(error,'enth error');
@@ -44,7 +42,6 @@ const adminlogin = async (req, res) => {
             email: req.body.email,
             password: req.body.password
         };
-
        
         const admin = await adminCollection.findOne({ email: data.email });
 
@@ -139,7 +136,8 @@ const employelistSearch=async(req,res)=>{
 
 const addemploye = async (req,res)=>{
     try {
-        res.render('addemploye')
+      const courses = await course.find()
+        res.render('addemploye',{courses})
     } catch (error) {
         console.log(error);
     }
@@ -149,9 +147,10 @@ const addemploye = async (req,res)=>{
 const addemploypost = async (req, res) => {
     try {
       const { name, email, mobile, designation, gender, course } = req.body;
+      console.log(req.body,'data kitty');
   
       
-      req.body.messages = { name, email, mobile, designation, gender, course };
+      req.body.messages = { name, email, mobile, designation, gender, mastercourse };
   
      
       if (!alphanumValid(name)) {
@@ -190,33 +189,155 @@ const addemploypost = async (req, res) => {
         mobile: mobile,
         designation: designation,
         gender: gender,
-        course: course,
+        course:course,
         imgUpload: req.file ? req.file.path : null,
       };
   
       const addEmployee = new Employee(employeData);
       await addEmployee.save();
+      console.log(addEmployee,'addemployee kitty')
   
       res.redirect('/employelist');
     } catch (error) {
       console.log(error, 'add employee error');
     }
   }
+
+
+
+  const mastercourselist = async(req,res)=>{
+    try {
+
+        const courses = await course.find()
+        res.render('courselist',{courses})
+    } catch (error) {
+        
+    }
+  }
   
+
+  const mastercourse= async(req,res)=>{
+    try {
+        res.render('mastercourse')
+    } catch (error) {
+        console.log(error,'mastercourse erro')
+    }
+  }
+
+  const mastercoursepost = async(req,res)=>{
+    try {
+        const {coursename,description} = req.body
+        console.log(req.body);
+
+        const newCourse = new course({
+            coursename: coursename,   
+            description: description,  
+        });
+        const existingEmployee = await course.findOne({ coursename });
+  
+      if (existingEmployee) {
+        req.flash('duplicateError', 'coursename already exists');
+        return res.redirect('/mastercourse');
+      }
+  
+      
+
+        
+        await newCourse.save(); 
+        console.log(newCourse);
+        res.redirect('/mastercourselist')
+
+        
+    } catch (error) {
+        
+    }
+  }
+  
+
+  const courseedit= async (req,res)=>{
+    try {
+
+      const {id} = req.params
+
+      const courses = await course.findById(id)
+    
+        res.render('editcourse',{courses})
+    } catch (error) {
+        
+    }
+  }
+
+  const courseeditpost = async(req,res)=>{
+    const { id } = req.params;
+    try {
+      const { coursename, description } = req.body;
+
+
+      const existingCourse = await course.findOne({
+        courseName: coursename,
+        _id: { $ne: id } // Exclude the current course by id
+      });
+     
+  
+      if (existingCourse) {
+        req.flash('duplicateError', 'Course name already exists');
+        return res.redirect(`/updatecourse/${id}`); // Redirect back to the edit form
+      }
+
+      const updatecourse = {
+        coursename,
+        description
+      }
+  
+      // Update the course if no conflict
+      await course.findByIdAndUpdate(id,updatecourse,{new:true});
+  
+
+      res.redirect('/mastercourselist')
+        
+    } catch (error) {
+        
+    }
+  }
+
+  const deletecourse=async(req,res)=>{
+    try {
+      const {id} = req.params;
+
+      const courses = await course.findById(id)
+      if (!courses) {
+        return res.status(404).json({ error: 'course not found' });
+      }
+      await course.findByIdAndDelete(id);
+      res.status(200).json({ message: 'course deleted successfully' })
+        
+    } catch (error) {
+        
+    }
+  }
+
+
+
+
+
+
+
 const editemployee = async (req, res) => {
     try {
       const { empId } = req.params;
+      const courses = await course.find()
       const employedata = await Employee.findById(empId);
-      res.render('employeedit', { employedata });
+      res.render('employeedit', { employedata,courses });
     } catch (error) {
       console.log(error);
     }
   };
   
   const editemployeepost = async (req, res) => {
+    const { empId } = req.params;
     try {
-        const { empId } = req.params;
-        const { name, email, mobile, designation, gender, course } = req.body;
+       
+        const { name, email, mobile, designation, gender,course } = req.body;
         const filePath = req.file ? req.file.path : null;
 
        
@@ -240,12 +361,13 @@ const editemployee = async (req, res) => {
             return res.redirect(`/editEmployee/${empId}`);
         }
 
-        const emailExists = await Employee.findOne({ email: email, _id: { $ne: empId } });
+        const emailExists = await  Employee.findOne({ email: email, _id: { $ne: empId } });
         
         if (emailExists) {
             req.flash('error', 'Email already exists!');
             return res.redirect(`/editEmployee/${empId}`);
         }
+        const selectedMasterCourses = course || [] ;
 
         const updatedEmployeeData = {
             name,
@@ -253,21 +375,23 @@ const editemployee = async (req, res) => {
             mobile,
             designation,
             gender,
-            course,
+            course: selectedMasterCourses,
         };
-
+        console.log('Employee edit kitty')
         if (filePath) {
             updatedEmployeeData.imgUpload = filePath;
         }
 
         await Employee.findByIdAndUpdate(empId, updatedEmployeeData, { new: true });
 
+        console.log(Employee,'Employee edit kitty')
+
         req.flash('success', 'Employee details updated successfully!');
         res.redirect('/employelist');
     } catch (error) {
         console.log(error, 'edit employee error');
         req.flash('error', 'An error occurred while updating the employee details.');
-        res.redirect(`/editEmployee/${empId}`);
+        // res.redirect(`/editEmployee/${empId}`);
     }
 };
 
@@ -297,7 +421,6 @@ const deleteemployee = async (req, res) => {
   const updateStausEmployee = async (req, res) => {
     try {
       const { empId } = req.params;
-  console.log('vannu');
       const employee = await Employee.findById(empId);
   
       if (!employee) {
@@ -318,7 +441,6 @@ const employeeSearch = async (req, res) => {
     const searchTerm = req.body.search;
     try {
 
-        console.log(searchTerm);
         const employees = await Employee.find({
             name: { $regex: searchTerm, $options: 'i' } 
         });
@@ -358,5 +480,11 @@ module.exports={
     updateStausEmployee,
     employeeSearch,
     employelistSearch,
-    sortEmployees
+    sortEmployees,
+    mastercourse,
+    mastercoursepost,
+    mastercourselist,
+    courseeditpost,
+    courseedit,
+    deletecourse,
 }

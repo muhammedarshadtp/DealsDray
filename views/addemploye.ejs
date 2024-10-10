@@ -111,19 +111,15 @@
               </div>
               <div class="form-group">
                 <label>Course</label><br>
-                <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="checkbox" name="course[]" id="mca" value="MCA" <%= messages.course && messages.course.includes('MCA') ? 'checked' : '' %>>
-                  <label class="form-check-label" for="mca">MCA</label>
-                </div>
-                <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="checkbox" name="course[]" id="bca" value="BCA" <%= messages.course && messages.course.includes('BCA') ? 'checked' : '' %>>
-                  <label class="form-check-label" for="bca">BCA</label>
-                </div>
-                <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="checkbox" name="course[]" id="bsc" value="BSC" <%= messages.course && messages.course.includes('BSC') ? 'checked' : '' %>>
-                  <label class="form-check-label" for="bsc">BSC</label>
-                </div>
-              </div>
+                <% courses.forEach(function(course) { %>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="course[]" id="<%= course.coursename %>" value="<%= course.coursename %>" 
+                    <%= messages.course && messages.course.includes(course.coursename) ? 'checked' : '' %>>
+                    <label class="form-check-label" for="<%= course.coursename %>"><%= course.coursename %></label>
+                  </div>
+                <% }) %>
+            </div>
+            
               <div class="form-group">
                 <label for="profilePicture">Profile Picture</label>
                 <input type="file" class="form-control-file" id="profilePicture" name="profilePicture" accept="image/*" onchange="previewImage(event)">
@@ -154,6 +150,8 @@
             imagePreview.style.display = 'none'; // Hide the preview if no file is selected
         }
     }
+
+    
 </script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 

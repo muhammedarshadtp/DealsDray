@@ -31,6 +31,17 @@ router.patch('/updateStatus/:empId',adminAuth,adminController.updateStausEmploye
 
 router.post('/employeeSearch',adminAuth ,adminController.employeeSearch)
 
+router.get('/mastercourse',adminAuth,adminController.mastercourse)
+
+router.get('/mastercourselist',adminAuth,adminController.mastercourselist)
+
+router.post('/mastercoursepost',adminAuth,adminController.mastercoursepost)
+
+router.get('/updatecourse/:id',adminAuth,adminController.courseedit)
+
+router.post('/updatecourse/:id',adminAuth,adminController.courseeditpost)
+
+router.delete('/deletecourse/:id',adminAuth,adminController.deletecourse)
 
 router.get('/sortEmployees',adminAuth,adminController.sortEmployees)
 
